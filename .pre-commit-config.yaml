@@ -1,0 +1,37 @@
+# Pre-commit manager: https://pre-commit.com
+
+# Commit hooks
+repos:
+# Python security linter
+  - repo: local
+    hooks:
+      # Python-code autoformat with minimum configuration. Settings are set in pyproject.toml.
+      - id: black
+        name: Local black
+        entry: black
+        language: python
+        types_or: [python, pyi]
+      # Python-imports sorting. Settings are set in pyproject.toml.
+      - id: isort
+        name: Local isort
+        entry: isort
+        language: python
+        types_or: [python, pyi]
+      # Check typing in Python files. Settings are set in pyproject.toml
+      - id: mypy
+        name: Local mypy
+        entry: mypy
+        language: python
+        types: [python]
+      # Check for files that contain merge conflict strings:
+      - id: check-merge-conflict
+        name: Local check-merge-conflict
+        entry: check-merge-conflict
+        language: python
+        types: [text]
+      # This hook trims trailing whitespace:
+      - id: trailing-whitespace-fixer
+        name: Local trailing-whitespace-fixer
+        entry: trailing-whitespace-fixer
+        language: python
+        types: [text]

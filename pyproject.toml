@@ -1,0 +1,71 @@
+[project]
+name = "npxcompress"
+version = "0.0.1"
+description = "Compress large-scale electrophysiological recordings based on Neuropixels"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
+keywords = ["lossless", "compresssion", "electrophysiology", "neuroscience", "mtscomp"]
+authors = [
+    {email="vadim.frolov@microsoft.com"},
+    {name="Vadim Frolov"},
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering",
+]
+
+dependencies = [
+    "mtscomp",
+    "click",
+    # delete it once mtscomp is fixed:
+    "tqdm",
+    "numpy",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "mypy",
+    "pre-commit",
+    "pre-commit-hooks",
+]
+
+[project.urls]
+homepage = "https://github.com/kavli-ntnu/npx-compress"
+documentation = "https://github.com/kavli-ntnu/npx-compress"
+repository = "https://github.com/kavli-ntnu/npx-compress"
+
+[project.scripts]
+npxcompress = "npxcompress.cli:main"
+
+[build-system]
+requires = ["hatchling>=0.7", "wheel"]
+build-backend = "hatchling.build"
+
+[tool.black]
+line-length = 130
+target_version = ['py39']
+include = '\.pyi?$'
+
+[tool.isort]
+known_third_party = ["numpy", "pytest", "setuptools"]
+profile = "black"
+line_length = 130
+skip = ["setup.cfg", "setup.py", ".gitignore", "README.md", "*.env", "Dockerfile*", "*.cfg", "*.ini"]
+
+[tool.mypy]
+ignore_missing_imports = true
+pretty = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
