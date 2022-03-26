@@ -29,3 +29,15 @@ docker run --rm npx --help
 pip install -e .[dev]
 pre-commit install
 ```
+
+### Making standalone executables
+
+[cx_Freeze](https://cx-freeze.readthedocs.io/en/latest/) may be used to create standalone executable packages for different
+platforms. It's up to you to create virtual environment with cx_Freeze in it. See [original documentation](https://cx-freeze.readthedocs.io/en/latest/installation.html) for details.
+
+For example, one may create .msi package for usage under Windows:
+```
+python setup_cx.py bdist_msi
+```
+
+Created `.msi` file will be in `dist` folder.
