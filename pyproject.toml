@@ -1,14 +1,13 @@
 [project]
 name = "npxcompress"
 version = "0.0.1"
-description = "Compress large-scale electrophysiological recordings based on Neuropixels"
+description = "Compress/decompress large-scale electrophysiological recordings based on Neuropixels"
 readme = "README.md"
 requires-python = ">=3.7"
 license = {file = "LICENSE"}
 keywords = ["lossless", "compresssion", "electrophysiology", "neuroscience", "mtscomp"]
 authors = [
-    {email="vadim.frolov@microsoft.com"},
-    {name="Vadim Frolov"},
+    {name="Vadim Frolov", email="fralik@gmail.com"},
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -23,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "mtscomp",
+    "mtscomp==1.0.2",
     "click",
     # delete it once mtscomp is fixed:
     "tqdm",
