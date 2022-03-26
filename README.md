@@ -12,6 +12,17 @@ pipx install git+https://github.com/kavli-ntnu/npx-compress.git
 npxcompress --help
 ```
 
+It is also possible to use the tool via Docker.
+
+## Docker
+
+```
+# Build image with (use whatever tag name you want)
+docker build -t npx .
+# Run tool via:
+docker run --rm npx --help
+```
+
 ## Development
 
 ```

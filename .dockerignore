@@ -1,0 +1,11 @@
+# Exclude everything by default
+*
+# Make an exception for the source code
+!npxcompress/*
+!pyproject.toml
+# Make an exception for the license file and readme
+!LICENSE
+!README.md
+# Exclude python cache
+**/*.pyc
+**/__pycache__
