@@ -36,6 +36,7 @@ dev = [
     "mypy",
     "pre-commit",
     "pre-commit-hooks",
+    "types-click",
 ]
 
 [project.urls]

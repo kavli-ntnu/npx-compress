@@ -35,6 +35,13 @@ pre-commit install
 [cx_Freeze](https://cx-freeze.readthedocs.io/en/latest/) may be used to create standalone executable packages for different
 platforms. It's up to you to create virtual environment with cx_Freeze in it. See [original documentation](https://cx-freeze.readthedocs.io/en/latest/installation.html) for details.
 
+In general, you should prepare the python environment on your build
+machine before using cx_Freeze. Run in Python >=3.7:
+```
+python -m pip install --upgrade pip build cx_freeze trove-classifiers
+pip install .
+```
+
 For example, one may create .msi package for usage under Windows:
 ```
 python setup_cx.py bdist_msi

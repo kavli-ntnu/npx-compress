@@ -83,6 +83,5 @@ def main(root_dir: str, decompress: bool, dry_run: bool):
         run_compression(root_dir, dry_run)
 
 
-#
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()

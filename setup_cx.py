@@ -9,7 +9,7 @@ build_exe_options = {
 }
 
 company_name = "KavliInstitute"
-product_name = "npx"
+product_name = "npxcompress"
 msi_data = {
     "ProgId": [
         (
