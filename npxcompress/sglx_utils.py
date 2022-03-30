@@ -3,9 +3,10 @@ This module contains functions that were origianlly taken from SpikeGLX_Datafile
 at http://billkarsh.github.io/SpikeGLX/#post-processing-tools
 """
 from pathlib import Path
+from typing import Dict
 
 
-def read_meta(meta_full_path: Path) -> dict[str, str]:
+def read_meta(meta_full_path: Path) -> Dict[str, str]:
     # Parse ini file returning a dictionary whose keys are the metadata
     # left-hand-side-tags, and values are string versions of the right-hand-side
     # metadata values. We remove any leading '~' characters in the tags to match
@@ -16,7 +17,7 @@ def read_meta(meta_full_path: Path) -> dict[str, str]:
     #
     #
 
-    meta_dict: dict[str, str] = {}
+    meta_dict: Dict[str, str] = {}
     if not meta_full_path.exists():
         return meta_dict
 
@@ -34,7 +35,7 @@ def read_meta(meta_full_path: Path) -> dict[str, str]:
     return meta_dict
 
 
-def get_sample_rate(meta: dict[str, str]) -> float:
+def get_sample_rate(meta: Dict[str, str]) -> float:
     # Return sample rate as python float.
     # On most systems, this will be implemented as C++ double.
     # Use python command sys.float_info to get properties of float on your system.
@@ -46,5 +47,5 @@ def get_sample_rate(meta: dict[str, str]) -> float:
     return rate
 
 
-def get_num_saved_channels(meta: dict[str, str]) -> int:
+def get_num_saved_channels(meta: Dict[str, str]) -> int:
     return int(meta["nSavedChans"])

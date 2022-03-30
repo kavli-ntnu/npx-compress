@@ -1,17 +1,17 @@
 import random
 from pathlib import Path
-from typing import Callable, Sequence, Tuple
+from typing import Callable, List, Sequence, Tuple
 
 
 def decision(probability: float) -> bool:
     return random.random() < probability
 
 
-def find_pairs(root_dir: str, bin_ext: str = "bin", meta_ext: str = "meta") -> Tuple[list[Path], list[Path]]:
+def find_pairs(root_dir: str, bin_ext: str = "bin", meta_ext: str = "meta") -> Tuple[List[Path], List[Path]]:
     bin_candidates = list(Path(root_dir).rglob(f"**/*.{bin_ext}"))
     metadata_candidates = [x.parent / f"{x.stem}.{meta_ext}" for x in bin_candidates]
     bin_files = []
-    metadata_files: list[Path] = []
+    metadata_files: List[Path] = []
     for bin_file, metadata_file in zip(bin_candidates, metadata_candidates):
         if metadata_file.is_file():
             bin_files.append(bin_file)
