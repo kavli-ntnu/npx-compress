@@ -28,8 +28,8 @@ jobs:
     steps:
       - id: step1
         run: |
-          echo "New version should be ${{needs.read_version.outputs.version_base}}.${{GITHUB_RUN_NUMBER}}"
-          echo "::set-output name=version::${{needs.read_version.outputs.version_base}}.${{GITHUB_RUN_NUMBER}}"
+          echo "New version should be ${{needs.read_version.outputs.version_base}}.${{github.run_number}}"
+          echo "::set-output name=version::${{needs.read_version.outputs.version_base}}.${{github.run_number}}"
 
   build_wheel:
     name: Build wheel on ${{ matrix.os }} Python ${{DEFAULT_PYTHON}}
