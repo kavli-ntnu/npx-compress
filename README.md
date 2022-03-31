@@ -25,8 +25,32 @@ docker run --rm npx --help
 
 ## Development
 
+Make sure to setup git config to handle the formatting/whitespaces correctly. To be able to work cross-platform,
+we upload all files in LF format. If you work on a windows machine, the default format is CRLF.
+
+```sh
+# On Windows:
+git config --global core.autocrlf true
+# On Linux/Mac:
+git config --global core.autocrlf input
+```
+
+To turn off the warning (not the functionality), run:
+
+```sh
+$ git config --global core.safecrlf false
+```
+
+Install the project in editable mode and with development requirements:
 ```
 pip install -e .[dev]
+```
+
+### Initialize pre-comit git hooks (on first setup)
+
+This is only required once when you start to work on the code.
+
+```
 pre-commit install
 ```
 
