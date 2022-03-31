@@ -32,7 +32,7 @@ jobs:
           echo "::set-output name=version::${{needs.read_version.outputs.version_base}}.${{github.run_number}}"
 
   build_wheel:
-    name: Build wheel on ${{ matrix.os }} Python ${{DEFAULT_PYTHON}}
+    name: Build wheel on ${{ matrix.os }} Python ${{env.DEFAULT_PYTHON}}
     runs-on: ${{ matrix.os }}
     needs: increase_version
     strategy:
