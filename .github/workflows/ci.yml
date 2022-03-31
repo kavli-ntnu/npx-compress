@@ -28,11 +28,11 @@ jobs:
     steps:
       - id: step1
         run: |
-          echo "New version should be ${{needs.read_version.outputs.version_base}}.${{env.GITHUB_RUN_NUMBER}}"
-          echo "::set-output name=version::${{needs.read_version.outputs.version_base}}.${{env.GITHUB_RUN_NUMBER}}"
+          echo "New version should be ${{needs.read_version.outputs.version_base}}.${{GITHUB_RUN_NUMBER}}"
+          echo "::set-output name=version::${{needs.read_version.outputs.version_base}}.${{GITHUB_RUN_NUMBER}}"
 
   build_wheel:
-    name: Build wheel on ${{ matrix.os }} Python ${{env.DEFAULT_PYTHON}}
+    name: Build wheel on ${{ matrix.os }} Python ${{DEFAULT_PYTHON}}
     runs-on: ${{ matrix.os }}
     needs: increase_version
     strategy:
@@ -47,7 +47,7 @@ jobs:
       # Used to host cibuildwheel
       - uses: actions/setup-python@v3
         with:
-          python-version: ${{env.DEFAULT_PYTHON}}
+          python-version: ${{DEFAULT_PYTHON}}
 
       - name: Set package version
         run: |
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
-          python-version: ${{env.DEFAULT_PYTHON}}
+          python-version: ${{DEFAULT_PYTHON}}
       - name: Init the environment
         run: |
           python -m pip install --upgrade pip build cx_freeze trove-classifiers bump2version
