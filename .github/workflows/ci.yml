@@ -1,0 +1,86 @@
+name: NPX-Compress CI
+
+on: [push, pull_request]
+
+env:
+  DEFAULT_PYTHON: "3.9"
+
+jobs:
+  read_version:
+    name: Read current package version
+    runs-on: ubuntu-latest
+    outputs:
+      version_base: ${{ steps.step1.outputs.prop }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: notiz-dev/github-action-json-property@release
+        id: step1
+        with:
+          path: 'version.json'
+          prop_path: 'version'
+
+  increase_version:
+    name: Update patch version to reflect the build
+    runs-on: ubuntu-latest
+    needs: read_version
+    outputs:
+      version: ${{ steps.step1.outputs.version }}
+    steps:
+      - id: step1
+        run: |
+          echo "New version should be ${{needs.read_version.outputs.version_base}}.${{env.GITHUB_RUN_NUMBER}}"
+          echo "::set-output name=version::${{needs.read_version.outputs.version_base}}.${{env.GITHUB_RUN_NUMBER}}"
+
+  build_wheel:
+    name: Build wheel on ${{ matrix.os }} Python ${{env.DEFAULT_PYTHON}}
+    runs-on: ${{ matrix.os }}
+    needs: increase_version
+    strategy:
+      matrix:
+        # os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
+        # python-version: ["3.7", "3.8", "3.9", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Used to host cibuildwheel
+      - uses: actions/setup-python@v3
+        with:
+          python-version: ${{env.DEFAULT_PYTHON}}
+
+      - name: Set package version
+        run: |
+          python -m pip install --upgrade pip bump2version build
+          bump2version --new-version ${{needs.increase_version.outputs.version}} patch
+
+      - name: Build wheel
+        run: |
+          python -m build --wheel
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/*.whl
+
+  build_msi:
+    name: Build MSI package
+    runs-on: windows-latest
+    needs: increase_version
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: ${{env.DEFAULT_PYTHON}}
+      - name: Init the environment
+        run: |
+          python -m pip install --upgrade pip build cx_freeze trove-classifiers bump2version
+          bump2version --new-version ${{needs.increase_version.outputs.version}} patch
+          pip install .
+
+      - name: Build the MSI
+        run: python setup_cx.py bdist_msi
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/*.msi
+
