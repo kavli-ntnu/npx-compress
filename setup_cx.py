@@ -37,7 +37,7 @@ base = None
 
 setup(
     name="npxompress",
-    version="0.0.1",
+    version="0.0.0",
     author=company_name,
     description="Compress/decompress large-scale electrophysiological recordings based on Neuropixels",
     options={

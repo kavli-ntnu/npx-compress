@@ -1,6 +1,7 @@
 [project]
 name = "npxcompress"
-version = "0.0.1"
+# it's important not to add any spaces aroun =. only for version:
+version="0.0.0"
 description = "Compress/decompress large-scale electrophysiological recordings based on Neuropixels"
 readme = "README.md"
 requires-python = ">=3.7"
