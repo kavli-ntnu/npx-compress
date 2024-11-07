@@ -20,9 +20,13 @@ def find_pairs(root_dir: str, bin_ext: str = "bin", meta_ext: str = "meta") -> T
     return bin_files, metadata_files
 
 
-def get_status_and_color(flag: bool) -> Tuple[str, str]:
-    status = "OK" if flag else "Failed"
-    bg_color = "green" if flag else "red"
+def get_status_and_color(flag: bool, skip: bool = False) -> Tuple[str, str]:
+    if skip:
+        status = "Skipped"
+        bg_color = "yellow"
+    else:
+        status = "OK" if flag else "Failed"
+        bg_color = "green" if flag else "red"
 
     return status, bg_color
 
@@ -31,9 +35,7 @@ def run_and_get_status(func: Callable[..., int], dry_run: bool, **kwargs) -> boo
     run_ok = True
     try:
         if dry_run:
-            shall_fail = decision(0.8)
-            if shall_fail:
-                raise Exception("fail")
+            raise Exception("Dry run")
         else:
             func(**kwargs)
     except:
