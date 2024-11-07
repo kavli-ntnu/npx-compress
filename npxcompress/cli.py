@@ -26,13 +26,14 @@ def run_compression(root_dir: str, dry_run: bool):
             dtype=dtype,
             check_after_compress=True,
         )
-        status = "OK" if compressed_ok else "Failed"
-        bg_color = "green" if compressed_ok else "red"
+        status, bg_color = get_status_and_color(compressed_ok, dry_run)
         click.echo(f"Compress {bin_file}" + "... " + click.style(status, bg=bg_color))
-
-        deleted_ok = run_and_get_status(delete_files, dry_run, files=(bin_file,))
-        status, bg_color = get_status_and_color(deleted_ok)
-        click.echo(f"\tRAW files deleted... " + click.style(status, bg=bg_color))
+        if compressed_ok and not dry_run:
+            deleted_ok = run_and_get_status(delete_files, dry_run, files=(bin_file,))
+            status, bg_color = get_status_and_color(deleted_ok)
+            click.echo(f"\tRAW files deleted... " + click.style(status, bg=bg_color))
+        else:
+            click.echo("\tRAW files not deleted")
 
 
 def run_decompression(root_dir: str, dry_run: bool):
@@ -43,15 +44,18 @@ def run_decompression(root_dir: str, dry_run: bool):
     for bin_file, metadata_file in zip(bin_files, metadata_files):
         output_name = bin_file.parent / f"{bin_file.stem}.bin"
 
-        decompress_ok = run_and_get_status(
+        decompressed_ok = run_and_get_status(
             decompress, dry_run, cdata=str(bin_file), cmeta=str(metadata_file), out=str(output_name), check_after_decompress=True
         )
-        status, bg_color = get_status_and_color(decompress_ok)
+        status, bg_color = get_status_and_color(decompressed_ok, dry_run)
         click.echo(f"Decompress {bin_file}" + "... " + click.style(status, bg=bg_color))
 
-        deleted_ok = run_and_get_status(delete_files, dry_run, files=(bin_file, metadata_file))
-        status, bg_colors = get_status_and_color(deleted_ok)
-        click.echo(f"\tCompressed files deleted... " + click.style(status, bg=bg_color))
+        if decompressed_ok and not dry_run:
+            deleted_ok = run_and_get_status(delete_files, dry_run, files=(bin_file, metadata_file))
+            status, bg_colors = get_status_and_color(deleted_ok)
+            click.echo(f"\tCompressed files deleted... " + click.style(status, bg=bg_color))
+        else:
+            click.echo("\tCompressed files not deleted")
 
 
 @click.command()
