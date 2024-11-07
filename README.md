@@ -14,76 +14,155 @@ pipx install git+https://github.com/kavli-ntnu/npx-compress.git
 npxcompress --help
 ```
 
-It is also possible to use the tool via Docker.
+Under the hood, `pipx` creates a private virtual environment dedicated to this tool, and will not interfere with any of
+your other environments. It makes the `npxcompress` command-line tool available system-wide, without activating or
+deactivating specific environments.
 
-## Docker
 
-```
-# Build image with (use whatever tag name you want)
-docker build -t npx .
-# Run tool via:
-docker run --rm npx --help
-```
 
-## Development
 
-Make sure to setup git config to handle the formatting/whitespaces correctly. To be able to work cross-platform,
-we upload all files in LF format. If you work on a windows machine, the default format is CRLF.
+## Usage
 
-```sh
-# On Windows:
-git config --global core.autocrlf true
-# On Linux/Mac:
-git config --global core.autocrlf input
-```
-
-To turn off the warning (not the functionality), run:
-
-```sh
-$ git config --global core.safecrlf false
-```
-
-Install the project in editable mode and with development requirements:
-```
-pip install -e .[dev]
+The following guide assumes that you have installed the tool via pipx as above, and that you have the following example
+data structure that you wish to compress (only relevant files shown
+```bash
+/
+├── data
+│   ├── subject_12345
+│   │   ├── 2024-10-11_10-30-25
+│   │   │   ├── probe_1
+│   │   │   │   ├── npx.imec.ap.bin
+│   │   │   │   ├── npx.imec.ap.meta
+│   │   │   ├── probe_2
+│   │   │   │   ├── npx.imec.ap.bin
+│   │   │   │   ├── npx.imec.ap.meta
+│   │   │
+│   │   ├── 2024-10-12_09-45-10
+│   │   │   ├── probe_1
+│   │   │   │   ├── npx.imec.ap.bin
+│   │   │   │   ├── npx.imec.ap.meta
+│   │   │   ├── probe_2
+│   │   │   │   ├── npx.imec.ap.bin
+│   │   │   │   ├── npx.imec.ap.meta
 ```
 
-### Initialize pre-comit git hooks (on first setup)
+### Compression
 
-This is only required once when you start to work on the code.
+`npxcompress` searches for all (binary, meta) files in the given directory and its subdirectories, and compresses them.
 
+```commandline
+$ npxcompress /data/subject_12345
 ```
-pre-commit install
+You should then see the following output:
+```commandline
+Starting to compress files found under /data/subject_12345
+Number of bin/meta pairs: 4
+Compressing: 100%|██████████████████████████████| 23/23 [01:08<00:00,  2.96s/it]
+Checking: 100%|███████████████████████████████| 225/225 [00:25<00:00,  8.88it/s]
+Compress /data/subject_12345/2024-10-11_10-30-25/probe_1/npx.imec.ap.bin... OK
+	RAW files deleted... ok
+Compressing: 100%|██████████████████████████████| 23/23 [01:08<00:00,  2.97s/it]
+Checking: 100%|███████████████████████████████| 225/225 [00:25<00:00,  8.80it/s]
+Compress /data/subject_12345/2024-10-11_10-30-25/probe_2/npx.imec.ap.bin... OK
+	RAW files deleted... ok
+Compressing: 100%|██████████████████████████████| 23/23 [01:08<00:00,  2.96s/it]
+Checking: 100%|███████████████████████████████| 225/225 [00:25<00:00,  8.88it/s]
+Compress /data/subject_12345/2024-10-12_09-45-10/probe_1/npx.imec.ap.bin... OK
+	RAW files deleted... ok
+Compressing: 100%|██████████████████████████████| 23/23 [01:08<00:00,  2.96s/it]
+Checking: 100%|███████████████████████████████| 225/225 [00:25<00:00,  8.88it/s]
+Compress /data/subject_12345/2024-10-12_09-45-10/probe_2/npx.imec.ap.bin... OK
+	RAW files deleted... ok
+```
+Your data structure should then look like this:
+
+```bash
+/
+├── data
+│   ├── subject_12345
+│   │   ├── 2024-10-11_10-30-25
+│   │   │   ├── probe_1
+│   │   │   │   ├── npx.imec.ap.cbin
+│   │   │   │   ├── npx.imec.ap.meta
+│   │   │   │   ├── npx.imec.ap.ch
+│   │   │   ├── probe_2
+│   │   │   │   ├── npx.imec.ap.cbin
+│   │   │   │   ├── npx.imec.ap.meta
+│   │   │   │   ├── npx.imec.ap.ch
+│   │   │
+│   │   ├── 2024-10-12_09-45-10
+│   │   │   ├── probe_1
+│   │   │   │   ├── npx.imec.ap.cbin
+│   │   │   │   ├── npx.imec.ap.meta
+│   │   │   │   ├── npx.imec.ap.ch
+│   │   │   ├── probe_2
+│   │   │   │   ├── npx.imec.ap.cbin
+│   │   │   │   ├── npx.imec.ap.meta
+│   │   │   │   ├── npx.imec.ap.ch
 ```
 
-### Versioning
+The `.bin` file is replaced with a `.cbin` file, typically about half the size (for Neuropixels 2, smaller for
+Neuropixels 1). A new file suffixed with `.ch` is created, which provides metadata about the compression and which is
+necessary for successful decompression. The original `.meta` file is left untouched.
 
-Versioning is done via continuous integration (CI) pipelines also known as GitHub Actions. Currently, the pipeline is
-triggered on every commit. It reads the version from `version.json` file (that must be in format `MAJOR.MINOR`) and
-adds a build number to it, so it becomes `MAJOR.MINOR.BUILD`. The build number is simply the counter of pipeline runs.
-This means that if you re-run the pipeline, you will get a version increase.
+The original binary file will _only_ be removed after the compressed file is validated against it. If, for any reason,
+an error occurs, the original file will _not_ be deleted or modified.
 
-### GitHub Actions
-
-There is one pipeline/action that runs on every commit. It increases a version number of the package, builds wheel
-and msi distributables. These distributable files are available in form of an artifact. It is possible to download them
-as a single .zip archive. See for example [this](https://github.com/kavli-ntnu/npx-compress/suites/5878773778/artifacts/198596214).
-
-### Making standalone executables
-
-[cx_Freeze](https://cx-freeze.readthedocs.io/en/latest/) may be used to create standalone executable packages for different
-platforms. It's up to you to create virtual environment with cx_Freeze in it. See [original documentation](https://cx-freeze.readthedocs.io/en/latest/installation.html) for details.
-
-In general, you should prepare the python environment on your build
-machine before using cx_Freeze. Run in Python >=3.7:
-```
-python -m pip install --upgrade pip build cx_freeze trove-classifiers
-pip install .
+You can also specify that the original files will be left intact via the optional `-k` or `--keep-original` argument:
+```commandline
+$ npxcompress /data/subject_12345 --keep-original
 ```
 
-For example, one may create .msi package for usage under Windows:
-```
-python setup_cx.py bdist_msi
+If you don't want to compress all files at once - perhaps some files are still in active use - you can compress a subset
+by giving a more specific path:
+```commandline
+$ npxcompress /data/subject_12345/2024-10-12_09-45-10
 ```
 
-Created `.msi` file will be in `dist` folder. You are encouraged to use github actions in order to build .msi packages.
+### Decompression
+
+Decompression works similarly to compression, with the `-d` or `--decompress` arguments
+
+```commandline
+$ npxcompress /data/subject_12345 --decompress
+```
+
+This will identify any (`.cbin`, `.ch`) file pairs and reproduce the original `.bin` files. By default, once decompressed,
+the compressed binaries will be deleted. As with compression, you can use the `-k` or `--keep-original` arguments to
+prevent this and keep the compressed files in place (and thus not have to re-compress them again afterwards)
+
+
+### Dry run
+
+You can check what files will be compressed (or decompressed) via the `--dry-run` argument. This will not modify any
+files, but may be useful for identifying how many binaries are included in the requested directory
+
+```commandline
+$ npxcompress /data/subject_12345 --dry-run
+```
+
+```commandline
+Starting to compress files found under /data/subject_12345
+Number of bin/meta pairs: 4
+Compress /data/subject_12345/2024-10-11_10-30-25/probe_1/npx.imec.ap.bin... Skipped
+	RAW files deleted... Skipped
+Compress /data/subject_12345/2024-10-11_10-30-25/probe_2/npx.imec.ap.bin... Skipped
+	RAW files deleted... Skipped
+Compress /data/subject_12345/2024-10-12_09-45-10/probe_1/npx.imec.ap.bin... Skipped
+	RAW files deleted... Skipped
+Compress /data/subject_12345/2024-10-12_09-45-10/probe_2/npx.imec.ap.bin... Skipped
+	RAW files deleted... Skipped
+```
+
+## Command line arguments
+
+The `npxcompress` tool uses a few command line arguments to control its behavior. Several arguments have both short and
+long forms, e.g. `-d` and `--decompress`. You can use either one of these interchangably. You can use these either before
+or after the path to be compressed/decompressed.
+
+The following two examples will have the same effect:
+
+```commandline
+$ npxcompress -d /data/subject_12345
+$ npxcompress /data/subject_12345 --decompress
+```
