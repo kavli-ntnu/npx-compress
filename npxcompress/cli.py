@@ -61,14 +61,12 @@ def run_decompression(root_dir: str, dry_run: bool):
     "--decompress",
     default=False,
     is_flag=True,
-    flag_value=False,
     help="Whether to decompress files instead of compressing them.",
 )
 @click.option(
     "--dry-run",
     default=False,
     is_flag=True,
-    flag_value=False,
     help="Perform a dry-run, no compression or decompression will be performed.",
 )
 def main(root_dir: str, decompress: bool, dry_run: bool):
