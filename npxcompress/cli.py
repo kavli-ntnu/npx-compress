@@ -29,9 +29,16 @@ def run_compression(root_dir: str, dry_run: bool, keep_original: bool):
         status, bg_color = get_status_and_color(compressed_ok, dry_run)
         click.echo(f"Compress {bin_file}" + "... " + click.style(status, bg=bg_color))
         if compressed_ok and not dry_run and not keep_original:
+            # Everything went correctly, go ahead and delete the raw files
             deleted_ok = run_and_get_status(delete_files, dry_run, files=(bin_file,))
             status, bg_color = get_status_and_color(deleted_ok)
+        elif not compressed_ok and not dry_run:
+            # Something went wrong with compression and not because of being a dry-run.
+            # Clean up the (broken) compressed file
+            _ = run_and_get_status(delete_files, dry_run, files=(bin_file.with_suffix(".cbin"),))
+            status, bg_color = get_status_and_color(False, True)
         else:
+            # Compression worked but either a dry-run, or keeping the original files
             status, bg_color = get_status_and_color(False, True)
         click.echo(f"\tRAW files deleted... " + click.style(status, bg=bg_color))
     return
@@ -52,8 +59,14 @@ def run_decompression(root_dir: str, dry_run: bool, keep_original: bool):
         click.echo(f"Decompress {bin_file}" + "... " + click.style(status, bg=bg_color))
 
         if decompressed_ok and not dry_run and not keep_original:
+            # Everything went correctly, go ahead and delete the compressed files
             deleted_ok = run_and_get_status(delete_files, dry_run, files=(bin_file, metadata_file))
             status, bg_colors = get_status_and_color(deleted_ok)
+        elif not decompressed_ok and not dry_run:
+            # Something went wrong with decompression and not because of being a dry-run.
+            # Clean up the (broken) decompressed file
+            _ = run_and_get_status(delete_files, dry_run, files=(output_name,))
+            status, bg_color = get_status_and_color(False, True)
         else:
             status, bg_color = get_status_and_color(False, True)
         click.echo(f"\tCompressed files deleted... " + click.style(status, bg=bg_color))
